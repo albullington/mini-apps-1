@@ -1,12 +1,14 @@
-class Square extends React.Component {
-	render() {
+const squareStyle = {
+  height: '34px',
+  width: '34px', 
+};
+
+function Square(props) {
 		return (
-			<button className="square" style={{height: '20px'; width: '20px'}} onClick={() =>
-				this.props.onClick()}>
-				{this.props.value}
+			<button className="square" style={squareStyle} onClick={() => props.onClick()}>
+				{props.value}
 			</button>
 		);
-	}
 }
 
 class Board extends React.Component {
@@ -14,26 +16,42 @@ class Board extends React.Component {
 		super(props);
 		this.state = {
 			squares: Array(42).fill(null),
+			xIsNext: true,
 		};
 	}
 
   handleClick(i) {
   	const squares = this.state.squares.slice();
-  	squares[i] = 'X';
-  	this.setState({squares: squares});
+  	if (getWinner(squares) || squares[i]) {
+  		return;
+  	}
+  	squares[i] = this.state.xIsNext ? 'X' : 'O';
+  	this.setState({
+  		squares: squares, 
+  		xIsNext: !this.state.xIsNext,
+  	});
   }
 
 	renderSquare(i) {
 		return (
 			<Square value={this.state.squares[i]} 
-			onClick={() => this.handleClick(i)} />
+			onClick={() => this.handleClick(i)} 
+			/>
 		);
 	}
+
 	render() {
-		const status = 'Next player: X';
+		const winner = getWinner(this.state.squares);
+		let status;
+		if (winner) {
+			status = 'Winner: ' + winner;
+		} else {
+			status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+		}
+
 		return (
 			<div>
-				<div className={status}>{status}</div>
+				<div className="status">{status}</div>
 				<div className="board-row">
 				  {this.renderSquare(0)}
 				  {this.renderSquare(1)}
@@ -107,6 +125,28 @@ class Game extends React.Component {
 			</div>
 		);
 	}
+}
+
+function getWinner(squares) {
+	if (checkHorizontal(squares) || checkVertical(squares) || checkDiagonal(squares))
+		console.log('winner');
+	//check for horizontal winners
+	//check for diagonal winners
+  //check for vertical winners
+  //return winner, else return no winner
+  console.log('no winner has been found');
+}
+
+function checkHorizontal(squares) {
+	// body...
+}
+
+function checkVertical(squares) {
+
+}
+
+function checkDiagonal(squares) {
+
 }
 
 ReactDOM.render(<Game />, document.getElementById('app'));
